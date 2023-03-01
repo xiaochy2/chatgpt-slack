@@ -15,6 +15,7 @@ app.use(async ({ next }) => {
 
 // Listens to incoming messages that contain "hello"
 app.message("hello", async ({ message, say }) => {
+  console.log(message);
   // Filter out message events with subtypes (see https://api.slack.com/events/message)
   if (message.subtype === undefined || message.subtype === "bot_message") {
     // say() sends a message to the channel where the event was triggered
