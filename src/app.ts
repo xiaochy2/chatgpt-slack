@@ -1,6 +1,6 @@
 import { App, LogLevel } from "@slack/bolt";
 import askChatGPT from "./openai";
-import { createChatGPTConversation } from "./utils";
+import { createChatGPTConversation, getBotId } from "./utils";
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -12,14 +12,20 @@ app.use(async ({ next }) => {
   await next();
 });
 
-app.event("app_mention", async ({ event, context, client, say }) => {
+app.event("app_mention", async ({ event, client, say }) => {
   try {
+    // get history conversation
     const threads = await client.conversations.replies({
       channel: event.channel,
       ts: event.thread_ts || event.ts,
     });
 
-    const text = await askChatGPT(createChatGPTConversation(threads.messages));
+    // TODO: hardcode or cache it
+    const botId = await getBotId(client);
+
+    const text = await askChatGPT(
+      createChatGPTConversation(threads.messages, botId)
+    );
 
     await say({
       text,
@@ -31,14 +37,16 @@ app.event("app_mention", async ({ event, context, client, say }) => {
 });
 
 app.message(/./, async ({ message, say, client }) => {
-  const bot_id = await getBotId();
   try {
     const threads = await client.conversations.replies({
       channel: message.channel,
       ts: (message as any).thread_ts || message.ts,
     });
+    const bot_id = await getBotId(client);
 
-    const text = await askChatGPT(createChatGPTConversation(threads.messages));
+    const text = await askChatGPT(
+      createChatGPTConversation(threads.messages, bot_id)
+    );
 
     await say({
       text,
@@ -55,15 +63,3 @@ app.message(/./, async ({ message, say, client }) => {
 
   console.log("⚡️ Bolt app is running!");
 })();
-
-async function getBotId() {
-  try {
-    const result = await app.client.auth.test({
-      token: process.env.SLACK_BOT_TOKEN,
-    });
-    console.log(result);
-    return result.user_id;
-  } catch (error) {
-    console.error(error);
-  }
-}
