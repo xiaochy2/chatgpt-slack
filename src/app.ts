@@ -31,12 +31,14 @@ app.event("app_mention", async ({ event, context, client, say }) => {
 });
 
 app.message(/./, async ({ message, say, client }) => {
+  console.log("message", message);
   try {
     const threads = await client.conversations.replies({
       channel: message.channel,
       ts: message.ts,
     });
 
+    console.log("thread messages", threads.messages);
     const text = await askChatGPT(createChatGPTConversation(threads.messages));
 
     await say({
