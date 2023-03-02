@@ -30,26 +30,22 @@ app.event("app_mention", async ({ event, context, client, say }) => {
   }
 });
 
-app.message(/./, async ({ message, say, client, event }) => {
-  console.log(event);
-  console.log(message);
-  await say(`Hello`);
+app.message(/./, async ({ message, say, client }) => {
+  try {
+    const threads = await client.conversations.replies({
+      channel: message.channel,
+      ts: message.ts,
+    });
 
-  // try {
-  //   const threads = await client.conversations.replies({
-  //     channel: event.channel,
-  //     ts: event.thread_ts || event.ts,
-  //   });
+    const text = await askChatGPT(createChatGPTConversation(threads.messages));
 
-  //   const text = await askChatGPT(createChatGPTConversation(threads.messages));
-
-  //   await say({
-  //     text,
-  //     thread_ts: event.ts,
-  //   });
-  // } catch (error) {
-  //   console.error(error);
-  // }
+    await say({
+      text,
+      thread_ts: message.ts,
+    });
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 app.event("app_mention", async ({ event, context, client, say }) => {
