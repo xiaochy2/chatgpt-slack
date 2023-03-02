@@ -31,6 +31,7 @@ app.event("app_mention", async ({ event, context, client, say }) => {
 });
 
 app.message(/./, async ({ message, say, client }) => {
+  const bot_id = await getBotId();
   try {
     const threads = await client.conversations.replies({
       channel: message.channel,
@@ -55,3 +56,15 @@ app.message(/./, async ({ message, say, client }) => {
 
   console.log("⚡️ Bolt app is running!");
 })();
+
+async function getBotId() {
+  try {
+    const result = await app.client.auth.test({
+      token: process.env.SLACK_USER_TOKEN,
+    });
+    console.log(result);
+    return result.user_id;
+  } catch (error) {
+    console.error(error);
+  }
+}
