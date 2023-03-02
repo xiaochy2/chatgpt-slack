@@ -13,65 +13,30 @@ app.use(async ({ next }) => {
   await next();
 });
 
-// Listens to incoming messages that contain "hello"
-app.message("hello", async ({ message, say }) => {
-  console.log(message);
-  // Filter out message events with subtypes (see https://api.slack.com/events/message)
-  if (message.subtype === undefined || message.subtype === "bot_message") {
-    // say() sends a message to the channel where the event was triggered
-    say(`Hey there <@${message.user}>!`);
-    // await say({
-    //   blocks: [
-    //     {
-    //       type: "section",
-    //       text: {
-    //         type: "mrkdwn",
-    //         text: `Hey there <@${message.user}>!`,
-    //       },
-    //       accessory: {
-    //         type: "button",
-    //         text: {
-    //           type: "plain_text",
-    //           text: "Click Me",
-    //         },
-    //         action_id: "button_click",
-    //       },
-    //     },
-    //   ],
-    //   text: `Hey there <@${message.user}>!`,
-    // });
-  }
-});
-
-app.action("button_click", async ({ body, ack, say }) => {
-  // Acknowledge the action
-  await ack();
-  await say(`<@${body.user.id}> clicked the button`);
-});
-
 app.event("app_mention", async ({ event, context, client, say }) => {
   console.log(event);
   try {
     await say({
-      blocks: [
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `Thanks for the mention <@${event.user}>! Here's a button`,
-          },
-          accessory: {
-            type: "button",
-            text: {
-              type: "plain_text",
-              text: "Button",
-              emoji: true,
-            },
-            value: "click_me_123",
-            action_id: "first_button",
-          },
-        },
-      ],
+      text: "nihao你好",
+      // blocks: [
+      //   {
+      //     type: "section",
+      //     text: {
+      //       type: "mrkdwn",
+      //       text: `Thanks for the mention <@${event.user}>! Here's a button`,
+      //     },
+      //     accessory: {
+      //       type: "button",
+      //       text: {
+      //         type: "plain_text",
+      //         text: "Button",
+      //         emoji: true,
+      //       },
+      //       value: "click_me_123",
+      //       action_id: "first_button",
+      //     },
+      //   },
+      // ],
       thread_ts: event.ts,
     });
   } catch (error) {
