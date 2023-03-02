@@ -36,6 +36,7 @@ app.message(/./, async ({ message, say, client }) => {
       channel: message.channel,
       ts: (message as any).thread_ts || message.ts,
     });
+    console.log(threads);
 
     const text = await askChatGPT(createChatGPTConversation(threads.messages));
 
