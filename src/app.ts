@@ -17,23 +17,6 @@ app.use(async ({ next }) => {
   await next();
 });
 
-function createChatGPTConversation(slackThreadMessages: any[] | undefined) {
-  if (!slackThreadMessages) {
-    return [];
-  }
-  const result: ChatCompletionRequestMessage[] = slackThreadMessages.map(
-    (thread) => {
-      return {
-        content: thread.text,
-        role: thread.user === botId ? "assistant" : "user",
-        name: thread.user,
-      };
-    }
-  );
-  result.unshift({ role: "system", content: "You are a helpful assistant." });
-  return result;
-}
-
 app.event("app_mention", async ({ event, context, client, say }) => {
   const threads = await client.conversations.replies({
     channel: event.channel,
@@ -57,3 +40,21 @@ app.event("app_mention", async ({ event, context, client, say }) => {
 
   console.log("⚡️ Bolt app is running!");
 })();
+
+function createChatGPTConversation(slackThreadMessages: any[] | undefined) {
+  if (!slackThreadMessages) {
+    return [];
+  }
+  const result: ChatCompletionRequestMessage[] = slackThreadMessages.map(
+    (thread) => {
+      return {
+        content: thread.text,
+        role: thread.user === botId ? "assistant" : "user",
+        name: thread.user,
+      };
+    }
+  );
+  result.unshift({ role: "system", content: "You are a helpful assistant." });
+  console.log("chatgpt conversation", result);
+  return result;
+}
