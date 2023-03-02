@@ -5,13 +5,13 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-export default async function ask(
-  conversations: ChatCompletionRequestMessage[]
+export default async function askChatGPT(
+  messages: ChatCompletionRequestMessage[]
 ) {
   try {
     const result = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
-      messages: conversations,
+      messages,
     });
     return result.data.choices[0].message?.content;
   } catch (err) {
