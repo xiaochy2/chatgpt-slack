@@ -18,7 +18,8 @@ app.event("app_mention", async ({ event, context, client, say }) => {
     channel: event.channel,
     ts: event.thread_ts || event.ts,
   });
-  console.log(threads.messages);
+  console.log(client.bots.info());
+  // console.log(threads.messages);
   const messages = threads.messages?.map((thread) => {
     return { text: thread.text, user: thread.user };
   });
