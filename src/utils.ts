@@ -16,6 +16,6 @@ export function createChatGPTConversation(
       };
     }
   );
-  result.unshift({ role: "system", content: "You are a artist." });
+  result.unshift({ role: "system", content: "You are a helpful assistant." });
   return result;
 }
