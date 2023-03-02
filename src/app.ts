@@ -31,37 +31,17 @@ app.event("app_mention", async ({ event, context, client, say }) => {
 });
 
 app.message(/./, async ({ message, say, client }) => {
-  console.log("message", message);
   try {
     const threads = await client.conversations.replies({
       channel: message.channel,
       ts: (message as any).thread_ts || message.ts,
     });
 
-    console.log("thread messages", threads.messages);
     const text = await askChatGPT(createChatGPTConversation(threads.messages));
 
     await say({
       text,
       thread_ts: message.ts,
-    });
-  } catch (error) {
-    console.error(error);
-  }
-});
-
-app.event("app_mention", async ({ event, context, client, say }) => {
-  try {
-    const threads = await client.conversations.replies({
-      channel: event.channel,
-      ts: event.thread_ts || event.ts,
-    });
-
-    const text = await askChatGPT(createChatGPTConversation(threads.messages));
-
-    await say({
-      text,
-      thread_ts: event.ts,
     });
   } catch (error) {
     console.error(error);
