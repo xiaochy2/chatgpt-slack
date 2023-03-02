@@ -35,7 +35,7 @@ app.message(/./, async ({ message, say, client }) => {
   try {
     const threads = await client.conversations.replies({
       channel: message.channel,
-      ts: message.ts,
+      ts: (message as any).thread_ts || message.ts,
     });
 
     console.log("thread messages", threads.messages);
