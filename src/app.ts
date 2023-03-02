@@ -18,7 +18,10 @@ app.event("app_mention", async ({ event, context, client, say }) => {
     channel: event.channel,
     ts: event.thread_ts || event.ts,
   });
-  const messages = threads.messages?.map((thread) => thread.text);
+  console.log(threads.messages);
+  const messages = threads.messages?.map((thread) => {
+    return { text: thread.text, user: thread.user };
+  });
   console.log(messages);
   try {
     await say({
