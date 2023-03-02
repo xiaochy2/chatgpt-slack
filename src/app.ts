@@ -72,7 +72,7 @@ app.event("app_mention", async ({ event, context, client, say }) => {
           },
         },
       ],
-      thread_ts: event.thread_ts,
+      thread_ts: event.ts,
     });
   } catch (error) {
     console.error(error);
