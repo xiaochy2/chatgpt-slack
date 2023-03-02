@@ -16,7 +16,7 @@ app.use(async ({ next }) => {
 app.event("app_mention", async ({ event, context, client, say }) => {
   const threads = await client.conversations.replies({
     channel: event.channel,
-    ts: event.ts,
+    ts: event.thread_ts || event.ts,
   });
   const messages = threads.messages?.map((thread) => thread.text);
   console.log(messages);
