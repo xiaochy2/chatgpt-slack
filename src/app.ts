@@ -49,6 +49,36 @@ app.action("button_click", async ({ body, ack, say }) => {
   await say(`<@${body.user.id}> clicked the button`);
 });
 
+app.event("app_mention", async ({ event, context, client, say }) => {
+  console.log(event);
+  try {
+    await say({
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `Thanks for the mention <@${event.user}>! Here's a button`,
+          },
+          accessory: {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Button",
+              emoji: true,
+            },
+            value: "click_me_123",
+            action_id: "first_button",
+          },
+        },
+      ],
+      thread_ts: event.thread_ts,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 (async () => {
   // Start your app
   await app.start(Number(process.env.PORT) || 3000);
