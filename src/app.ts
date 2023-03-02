@@ -14,7 +14,12 @@ app.use(async ({ next }) => {
 });
 
 app.event("app_mention", async ({ event, context, client, say }) => {
-  console.log(event);
+  const threads = await client.conversations.replies({
+    channel: event.channel,
+    ts: event.ts,
+  });
+  const messages = threads.messages?.map((thread) => thread.text);
+  console.log(messages);
   try {
     await say({
       text: "nihao你好",
