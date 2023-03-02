@@ -1,5 +1,5 @@
 import { ChatCompletionRequestMessage } from "openai";
-import { CHATGPT_BOT_ID } from "./enum";
+import { CHATGPT_BOT_ID, CHATGPT_BOT_NAME } from "./enum";
 
 export function createChatGPTConversation(
   slackThreadMessages: any[] | undefined
@@ -12,10 +12,10 @@ export function createChatGPTConversation(
       return {
         content: thread.text,
         role: thread.user === CHATGPT_BOT_ID ? "assistant" : "user",
-        name: thread.user,
+        name: thread.user === CHATGPT_BOT_ID ? CHATGPT_BOT_NAME : thread.user,
       };
     }
   );
-  result.unshift({ role: "system", content: "You are a helpful assistant." });
+  result.unshift({ role: "system", content: "You are a artist." });
   return result;
 }
