@@ -2,6 +2,8 @@
 /* eslint-disable import/no-internal-modules */
 import "./utils/env";
 import { App, LogLevel } from "@slack/bolt";
+import ask from "./openai";
+import { ChatCompletionRequestMessage } from "openai";
 
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
@@ -9,43 +11,39 @@ const app = new App({
   logLevel: LogLevel.DEBUG,
 });
 
+const botId = "U04RB48FUNA";
+
 app.use(async ({ next }) => {
   await next();
 });
+
+function createChatGPTConversation(slackThreadMessages: any[] | undefined) {
+  if (!slackThreadMessages) {
+    return [];
+  }
+  const result: ChatCompletionRequestMessage[] = slackThreadMessages.map(
+    (thread) => {
+      return {
+        content: thread.text,
+        role: thread.user === botId ? "assistant" : "user",
+        name: thread.user,
+      };
+    }
+  );
+  result.unshift({ role: "system", content: "You are a helpful assistant." });
+  return result;
+}
 
 app.event("app_mention", async ({ event, context, client, say }) => {
   const threads = await client.conversations.replies({
     channel: event.channel,
     ts: event.thread_ts || event.ts,
   });
-  console.log(client.bots.info());
-  // console.log(threads.messages);
-  const messages = threads.messages?.map((thread) => {
-    return { text: thread.text, user: thread.user };
-  });
-  console.log(messages);
+  const text = await ask(createChatGPTConversation(threads.messages));
+
   try {
     await say({
-      text: "nihao你好",
-      // blocks: [
-      //   {
-      //     type: "section",
-      //     text: {
-      //       type: "mrkdwn",
-      //       text: `Thanks for the mention <@${event.user}>! Here's a button`,
-      //     },
-      //     accessory: {
-      //       type: "button",
-      //       text: {
-      //         type: "plain_text",
-      //         text: "Button",
-      //         emoji: true,
-      //       },
-      //       value: "click_me_123",
-      //       action_id: "first_button",
-      //     },
-      //   },
-      // ],
+      text,
       thread_ts: event.ts,
     });
   } catch (error) {
