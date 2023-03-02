@@ -37,7 +37,6 @@ app.message(/./, async ({ message, say, client }) => {
       channel: message.channel,
       ts: (message as any).thread_ts || message.ts,
     });
-    console.log(threads);
 
     const text = await askChatGPT(createChatGPTConversation(threads.messages));
 
@@ -60,7 +59,7 @@ app.message(/./, async ({ message, say, client }) => {
 async function getBotId() {
   try {
     const result = await app.client.auth.test({
-      token: process.env.SLACK_USER_TOKEN,
+      token: process.env.SLACK_BOT_TOKEN,
     });
     console.log(result);
     return result.user_id;
